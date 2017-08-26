@@ -1,5 +1,6 @@
 package com.patsuyash.cartRest;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -17,6 +18,8 @@ import com.patsuyash.cartRest.service.UserService;
  */
 @SpringBootApplication
 public class ShoppingCartApplication {
+	@Value("${cartRest.cors.allowedOrigin:http://localhost:8180}")
+	private String allowedHost;
 
 	public static void main(String[] args) {
 		ConfigurableApplicationContext applicationContext = SpringApplication.run(ShoppingCartApplication.class, args);
@@ -27,17 +30,16 @@ public class ShoppingCartApplication {
 		UserService userService = applicationContext.getBean(UserService.class);
 		userService.saveInitialBatch();
 
-
 	}
+
 	@Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurerAdapter() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-            	registry.addMapping("/**")
-                .allowedOrigins("http://localhost:8180")
-                .allowedMethods("PUT", "DELETE","GET", "POST");
-            }
-        };
-    }
+	public WebMvcConfigurer corsConfigurer() {
+		System.out.println("sssssssssssssssssssssssssssssss" + allowedHost);
+		return new WebMvcConfigurerAdapter() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**").allowedOrigins(allowedHost).allowedMethods("PUT", "DELETE", "GET", "POST");
+			}
+		};
+	}
 }
